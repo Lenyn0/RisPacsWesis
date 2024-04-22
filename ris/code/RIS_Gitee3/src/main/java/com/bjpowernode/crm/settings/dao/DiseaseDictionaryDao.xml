@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bjpowernode.crm.settings.dao.DiseaseDictionaryDao">
+
+    <delete id="deleteDisDicByBodyPart">
+        delete
+        from tbl_disease_dictionary
+        where bodyPart=#{bodyPart}
+    </delete>
+
+    <update id="updateDisDicBodyPartByID">
+        update tbl_disease_dictionary
+        set bodyPart = #{bodyPart}
+        where id=#{id}
+    </update>
+
+    <select id="getByBodyPart" parameterType="java.lang.String" resultType="DiseaseDictionary">
+        select *
+        from tbl_disease_dictionary
+        where bodypart=#{bodyPart}
+    </select>
+
+    <select id="getDisIDByValue" resultType="DiseaseDictionary">
+        select *
+        from tbl_disease_dictionary
+        where bodyPart = #{value}
+    </select>
+
+    <update id="updateDisDicValueByID">
+        update tbl_disease_dictionary
+        set bodyPart = #{value}
+        where id = #{old_value}
+    </update>
+
+    <update id="updateDisDicByID">
+        update tbl_disease_dictionary
+        set bodyPart = #{bodyPart},
+            name = #{name},
+            description = #{description},
+            modifyTime = #{modifyTime},
+            modifyUserID = #{modifyUserID}
+        where id=#{id}
+    </update>
+
+    <select id="getByID" parameterType="java.lang.String" resultType="DiseaseDictionary">
+        select *
+        from tbl_disease_dictionary
+        where id=#{id}
+    </select>
+
+    <delete id="deleteDisDicByID">
+        delete
+        from tbl_disease_dictionary
+        where id=#{id}
+    </delete>
+
+    <insert id="saveDisDic">
+        insert
+        into tbl_disease_dictionary(id,bodyPart,name,description,createUserID,createTime,modifyTime,modifyUserID)
+        values(#{id},#{bodyPart},#{name},#{description},#{createUserID},#{createTime},#{modifyTime},#{modifyUserID})
+    </insert>
+
+    <select id="getTotalByCondition" resultType="int"> /*①不能写resultMap*/
+        select count(*)
+        from tbl_disease_dictionary a
+        <where>
+            <if test="id!=null and id!=''">
+                a.id like '%' #{id} '%'
+            </if>
+            <if test="name!=null and name!=''">
+                and a.name like '%' #{name} '%'
+            </if>
+            <if test="bodyPart!=null and bodyPart!=''">
+                and a.bodyPart like '%' #{bodyPart} '%'
+            </if>
+        </where>
+    </select>
+
+    <select id="getDiseaseListByCondition" resultType="DiseaseDictionary">
+        select a.id,a.name ,a.bodyPart,a.description
+        from tbl_disease_dictionary a
+        <where>
+            <if test="id!=null and id!=''">
+                a.id like '%' #{id} '%'
+            </if>
+            <if test="name!=null and name!=''">
+                and a.name like '%' #{name} '%'
+            </if>
+            <if test="bodyPart!=null and bodyPart!=''">
+                and a.bodyPart like '%' #{bodyPart} '%'
+            </if>
+        </where>
+        order by a.id asc
+        limit #{skipCount},#{pageSize}
+    </select>
+
+    <select id="getListBybodyPart" resultType="DiseaseDictionary">
+        select * from tbl_disease_dictionary where bodyPart=#{bodyPart}
+    </select>
+
+    <select id="getDiseaseDescription" resultType="String">
+        select description from tbl_disease_dictionary where name=#{name}
+    </select>
+
+    <select id="getDiseaseNameById" resultType="java.lang.String">
+        select p.name
+        from tbl_disease_dictionary p
+        where id=#{id}
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

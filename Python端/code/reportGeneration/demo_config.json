@@ -1,0 +1,12 @@
+{
+    "model_path": "reportGeneration/reportGeneration.pt",
+    "BACKBONE_NAME": "DenseNet121",
+    "MODEL_NAME": "ClsGen",
+    "chinese_vocab": "reportGeneration/Vocabulary/chinese_vocab.json",
+    "max_len": 256,
+    "NUM_LABELS": 94,
+    "NUM_CLASSES": 2,
+    "input_size": [256, 256],
+    "max_views": 1,
+    "threshold": 0.25
+}

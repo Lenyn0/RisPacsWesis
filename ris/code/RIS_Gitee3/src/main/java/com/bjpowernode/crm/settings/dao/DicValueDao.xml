@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+ "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bjpowernode.crm.settings.dao.DicValueDao">
+
+    <delete id="deleteDicValueByID">
+        delete
+        from tbl_dic_value
+        where id=#{id}
+    </delete>
+
+    <update id="updateDicValueByID" parameterType="String">
+        update tbl_dic_value
+        set value = #{value}, text = #{value}
+        where id=#{id}
+    </update>
+
+    <select id="getByID" parameterType="java.lang.String" resultType="DicValue">
+        select *
+        from tbl_dic_value
+        where id=#{id}
+    </select>
+
+    <select id="getTotalByCondition" resultType="int"> /*①不能写resultMap*/
+        select count(*)
+        from tbl_dic_value a
+        <where>
+            <if test="typeCode!=null and typeCode!=''">
+                a.typeCode like '%' #{typeCode} '%'
+            </if>
+            <if test="value!=null and value!=''">
+                and a.value like '%' #{value} '%'
+            </if>
+        </where>
+    </select>
+
+    <select id="getValueListByCondition" resultType="DicValue">
+        select a.id,a.value,a.typeCode
+        from tbl_dic_value a
+        <where>
+            <if test="typeCode!=null and typeCode!=''">
+                a.typeCode like '%' #{typeCode} '%'
+            </if>
+            <if test="value!=null and value!=''">
+                and a.value like '%' #{value} '%'
+            </if>
+        </where>
+        order by a.id asc
+        limit #{skipCount},#{pageSize}
+    </select>
+
+
+    <select id="getMaxOrderNo" parameterType="java.lang.String" resultType="String">
+        /*select max(cast(orderNo AS int))*/
+        select orderNo
+        from tbl_dic_value
+        where typeCode=#{typeCode}
+    </select>
+
+    <insert id="saveDicValue">
+        insert
+        into tbl_dic_value(id,value,text,orderNo,typeCode)
+        values(#{id},#{value},#{text},#{orderNo},#{typeCode})
+    </insert>
+
+    <select id="getbodyPartList" resultType="String">
+        select value from tbl_dic_value where typeCode=#{code}
+    </select>
+
+    <select id="getListByCode" resultType="DicValue">
+        select * from tbl_dic_value where typeCode=#{code} order by (orderNo+0)
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

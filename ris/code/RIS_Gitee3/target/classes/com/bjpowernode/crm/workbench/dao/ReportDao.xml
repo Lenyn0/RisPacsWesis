@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bjpowernode.crm.workbench.dao.ReportDao">
+
+    <!--    parameterType自动起别名，省略-->
+
+    <select id="getReportListByCondition1" resultType="String">
+        select studyID
+        from tbl_report
+        where reportStatus = 2/*1待审核，2需修正，3审核通过，4锁定（不可被修改）；*/
+    </select>
+
+    <select id="getReportListByCondition2" resultType="String">
+        select studyID
+        from tbl_report
+        where reportStatus = 1 or reportStatus = 3 or reportStatus = 4/*1待审核，2需修正，3审核通过，4锁定（不可被修改）；*/
+    </select>
+
+    <select id="getWorkload" resultType="map">
+        select u.name as name, count(*) as value
+        from tbl_report r
+            join tbl_user u
+        on u.id=r.createUserID
+        where r.createTime BETWEEN #{startDate} AND #{endDate}
+        group by r.createUserID
+    </select>
+
+    <select id="getWorkload_auditor" resultType="map">
+        select u.name as name, count(*) as value
+        from tbl_report r
+            join tbl_user u
+        on u.id=r.auditorID
+        where r.createTime BETWEEN #{startDate} AND #{endDate}
+        group by r.auditorID
+    </select>
+
+    <select id="getCharts" resultType="map">
+        select
+
+            count(*) as value,d.name as name
+
+        from tbl_study_info s
+            join tbl_device d
+        on s.studyDevice=d.id
+
+        group by studyDevice
+    </select>
+
+    <!--增加一条新的报告，从无到有-->
+    <insert id="save" parameterType="Report">
+        insert
+        into tbl_report(id,studyID,patientID,reportStatus,createUserID,auditorID,imagingFindings,diagnosticOpinion,bodyPart,diseaseName,diseaseDescription,createTime,positive)
+        values(#{id},#{studyID},#{patientID},#{reportStatus},#{createUserID},#{auditorID},#{imagingFindings},#{diagnosticOpinion},#{bodyPart},#{diseaseName},#{diseaseDescription},#{createTime},#{positive})
+    </insert>
+
+    <!--修改状态-->
+    <update id="updateReportStatus" parameterType="java.lang.String">
+        update tbl_report
+        set  reportStatus=#{reportStatus}
+        where id=#{id} OR studyID=#{id}
+    </update>
+
+    <update id="updateAuditorID" parameterType="java.lang.String">
+        update tbl_report
+        set  auditorID=#{auditorID}
+        where id=#{id}
+    </update>
+
+    <select id="getById" resultType="Report">
+        select *
+        from tbl_report
+        where id=#{id}
+    </select>
+
+    <select id="getTotalByCondition" resultType="int"> /*①不能写resultMap*/
+    select count(*)
+    from tbl_report a
+        <where>
+            <if test="id!=null and id!=''">
+                a.id like '%' #{id} '%'
+            </if>
+            <if test="studyID!=null and studyID!=''">
+                and a.StudyID like '%' #{studyID} '%'
+            </if>
+            <if test="reportStatus!=null and reportStatus!=''">
+                and a.reportStatus like '%' #{reportStatus} '%'
+            </if>
+        </where>
+    </select>
+
+    <!--<select id="getReportListByCondition" resultType="Report">
+        select a.id,a.patientID ,a.studyID,a.reportStatus
+        from tbl_report a
+        where a.reportStatus=1 or reportStatus=3 or reportStatus=2
+        order by a.id asc
+            limit #{skipCount},#{pageSize}
+    </select>-->
+
+    <select id="getReportListByCondition" resultType="Report">
+        select a.id,a.patientID ,a.studyID,a.reportStatus,a.createTime
+        from tbl_report a
+        <where>
+            <if test="id!=null and id!=''">
+                a.id like '%' #{id} '%'
+            </if>
+            <if test="studyID!=null and studyID!=''">
+                and a.StudyID like '%' #{studyID} '%'
+            </if>
+            <if test="reportStatus!=null and reportStatus!=''">
+                and a.reportStatus like '%' #{reportStatus} '%'
+            </if>
+        </where>
+        order by a.id asc
+        limit #{skipCount},#{pageSize}
+    </select>
+
+    <select id="getByIdOrStudyID" resultType="Report">
+        select *
+        from tbl_report
+        where id=#{id} or studyID=#{id}
+    </select>
+
+    <select id="getReportStatusById" resultType="java.lang.String">
+        select reportStatus
+        from tbl_report
+        where id=#{id}
+    </select>
+
+    <!--根据表设计中诊断医生需要填写的项目进行更新,应该用不到-->
+    <update id="update">
+        update tbl_report
+        set reportStatus=#{reportStatus},imagingFindings=#{imagingFindings},bodyPart=#{bodyPart} ,diagnosticOpinion=#{diagnosticOpinion},diseaseName=#{diseaseName},diseaseDescription=#{diseaseDescription}
+        where id=#{id}
+    </update>
+
+</mapper>
