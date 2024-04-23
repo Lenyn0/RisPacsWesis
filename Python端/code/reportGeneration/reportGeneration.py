@@ -12,8 +12,12 @@ import sentencepiece as spm
 import os
 import time
 import json
+import logging
 
 def getReportGeneration(image):
+
+    # 获取在main.py中定义的日志记录器
+    logger = logging.getLogger()
 
     # ======= define variable =======
     # 读取demo_config.json配置文件
@@ -101,16 +105,16 @@ def getReportGeneration(image):
         for param in model.parameters():
             param = param.cpu()
 
-    print('Reload From: {} | Last Epoch: {} | Validation Metric: {} | Test Metric: {}'.format(model_path, last_epoch,
-                                                                                              best_metric, test_metric))
+    #print('Reload From: {} | Last Epoch: {} | Validation Metric: {} | Test Metric: {}'.format(model_path, last_epoch,best_metric, test_metric))
+    logger.info('Reload From: {} | Last Epoch: {} | Validation Metric: {} | Test Metric: {}'.format(model_path, last_epoch,best_metric, test_metric))
 
     transform = transforms.Compose([transforms.Resize(input_size), transforms.ToTensor()])
 
     model.eval()
     # 打印现在时间
     start_time = time.time()
-    print('Start Time: {}'.format(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))))
-
+    #print('Start Time: {}'.format(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))))
+    logger.info('Start Time: {}'.format(time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(time.time()))))
     outputs = []
     targets = []
     with torch.no_grad():
@@ -168,13 +172,17 @@ def getReportGeneration(image):
             else:  # letter
                 candidate += tok
 
-        print('Generated Text: {}'.format(candidate))
-        # 打印现在时间
-        print('Time: {}'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
-        # 打印耗时
-        # cpu: 14 s
-        # cuda: 3 s
-        print('Time Cost: {}'.format(time.time() - start_time))
+        # print('Generated Text: {}'.format(candidate))
+        # # 打印现在时间
+        # print('Time: {}'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
+        # # 打印耗时
+        # # cpu: 14 s
+        # # cuda: 3 s
+        # print('Time Cost: {}'.format(time.time() - start_time))
+
+        logger.info('Generated Text: {}'.format(candidate))
+        logger.info('Time: {}'.format(time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())))
+        logger.info('Time Cost: {}'.format(time.time() - start_time))
 
         # # 使用时间戳命名
         # TEXT_FILE = os.path.join('outputs', 'text_{}.txt'.format(int(time.time())))
