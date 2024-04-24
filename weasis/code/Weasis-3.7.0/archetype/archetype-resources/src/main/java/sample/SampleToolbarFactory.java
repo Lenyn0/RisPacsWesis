@@ -58,7 +58,7 @@ public class SampleToolbarFactory implements InsertableFactory {
     public Insertable createInstance(Hashtable<String, Object> properties) {
 //        return new SampleToolBar<ImageElement>();
 
-       return new SampleToolBar(model);
+       return new SampleToolBar();
 
 
     }
