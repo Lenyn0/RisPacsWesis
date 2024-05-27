@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.by.ris_springboot.web.dao.WorkListDao">
+
+    <select id="getWorkList" resultType="WorkList">
+        select
+        s.accessionNumber,
+        s.modality,
+        p.name as patientName,
+        s.patientID,
+        p.birthDate as patientBirthDate,
+        p.gender as patientSex,
+        s.studyInstanceUID,
+        s.requestedProcedureDescription,
+        d.aet,
+        s.scheduledProcedureStepStartDate,
+        s.scheduledProcedureStepStartTime,
+        s.scheduledProcedureStepDescription,
+        s.scheduledProcedureStepID,
+        s.requestedProcedureID
+        from tbl_study_info s,tbl_patient p,tbl_device d
+        <where>
+            /*or (r.reportStatus=2 and r.studyID = a.accessionNumber)*/
+            (s.status=5) and s.patientID=p.id and s.studyDevice=d.id
+            /*查询的工作 studyID,patientID,patientName,status*/
+            <if test="accessionNumber!=null and accessionNumber!=''">
+                and s.accessionNumber=#{accessionNumber}
+            </if>
+            <if test="modality!=null and modality!=''">
+                and s.modality=#{modality}
+            </if>
+            <if test="patientName!=null and patientName!=''">
+                and p.name=#{patientName}
+            </if>
+            <if test="patientID!=null and patientID!=''">
+                and s.patientID=#{patientID}
+            </if>
+            <if test="patientBirthDate!=null and patientBirthDate!=''">
+                and p.birthDate=#{patientBirthDate}
+            </if>
+            <if test="patientSex!=null and patientSex!=''">
+                and p.gender=#{patientSex}
+            </if>
+            <if test="studyInstanceUID!=null and studyInstanceUID!=''">
+                and s.studyInstanceUID=#{studyInstanceUID}
+            </if>
+            <if test="requestedProcedureDescription!=null and requestedProcedureDescription!=''">
+                and s.requestedProcedureDescription=#{requestedProcedureDescription}
+            </if>
+            <if test="scheduledStationAETitle!=null and scheduledStationAETitle!=''">
+                and d.aet=#{scheduledStationAETitle}
+            </if>
+            <if test="scheduledProcedureStepStartDate!=null and scheduledProcedureStepStartDate!=''">
+                and s.scheduledProcedureStepStartDate=#{scheduledProcedureStepStartDate}
+            </if>
+            <if test="scheduledProcedureStepStartTime!=null and scheduledProcedureStepStartTime!=''">
+                and s.scheduledProcedureStepStartTime=#{scheduledProcedureStepStartTime}
+            </if>
+            <if test="scheduledProcedureStepDescription!=null and scheduledProcedureStepDescription!=''">
+                and s.scheduledProcedureStepDescription=#{scheduledProcedureStepDescription}
+            </if>
+            <if test="scheduledProcedureStepID!=null and scheduledProcedureStepID!=''">
+                and s.scheduledProcedureStepID=#{scheduledProcedureStepID}
+            </if>
+            <if test="requestedProcedureID!=null and requestedProcedureID!=''">
+                and s.requestedProcedureID=#{requestedProcedureID}
+            </if>
+        </where>
+        /*order by s.accessionNumber asc*/
+
+    </select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

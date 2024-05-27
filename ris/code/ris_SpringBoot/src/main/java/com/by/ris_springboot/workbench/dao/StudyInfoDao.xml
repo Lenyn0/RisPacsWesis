@@ -1,0 +1,423 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.by.ris_springboot.workbench.dao.StudyInfoDao">
+
+    <update id="updatetechnicianID" parameterType="java.lang.String">
+        update tbl_study_info
+        set technicianID=#{technicianID}
+        where accessionNumber=#{accessionNumber}
+    </update>
+
+    <select id="getWorkload_Device" resultType="map">
+        select d.name as name, count(*) as value
+        from tbl_study_info s
+            join tbl_device d
+        on s.studyDevice=d.id
+        where (s.scheduledProcedureStepStartDate BETWEEN #{startDate} AND #{endDate}) AND s.status = "7"
+        group by s.studyDevice
+    </select>
+
+    <select id="getWorkload_clinicianID" resultType="map">
+        select u.name as name, count(*) as value
+        from tbl_study_info s
+            join tbl_user u
+        on u.id=s.registrarID
+        where (s.scheduledProcedureStepStartDate BETWEEN #{startDate} AND #{endDate}) AND s.status = "7"
+        group by s.registrarID
+    </select>
+
+    <select id="getWorkload_technician" resultType="map">
+        select u.name as name, count(*) as value
+        from tbl_study_info s
+            join tbl_user u
+        on u.id=s.technicianID
+        where s.scheduledProcedureStepStartDate BETWEEN #{startDate} AND #{endDate}
+        group by s.technicianID
+    </select>
+
+    <select id="getDiagnosticianChartsByYear" resultType="map">
+        select left(createTime,4) as name,count(*) as value
+        from tbl_report
+        where positive = '是'
+        group by left(createTime,4)
+    </select>
+
+    <select id="getTechnicianCharts" resultType="map">
+        select
+
+            count(*) as value,u.name as name
+
+        from tbl_study_info s
+            join tbl_user u
+        on s.technicianID=u.id
+
+        group by technicianID
+    </select>
+
+    <select id="getPositiveCharts" resultType="map">
+        select left(createTime,4) as name,count(*) as value
+        from tbl_report
+        where positive = '是'
+        group by left(createTime,4)
+    </select>
+
+    <select id="getWorkload_positive" resultType="map">
+        select left(createTime,4) as name,count(*) as value
+        from tbl_report r
+        where r.positive = '是' AND r.createTime BETWEEN #{startDate} AND #{endDate}
+        group by left(createTime,4)
+    </select>
+
+    <select id="getCharts" resultType="map">
+        select
+
+            count(*) as value,d.name as name
+
+        from tbl_study_info s
+            join tbl_device d
+        on s.studyDevice=d.id
+
+        group by studyDevice
+    </select>
+
+    <select id="getTotal" resultType="int">
+
+        select count(*) from tbl_study_info
+
+    </select>
+
+
+    <update id="updateStudyInfoByArtificer" parameterType="com.by.ris_springboot.workbench.domain.StudyInfo">
+        update tbl_study_info
+        set projection=#{projection},useConsumables=#{useConsumables},scheduledProcedureStepDescription=#{scheduledProcedureStepDescription}
+        where accessionNumber=#{accessionNumber}
+    </update>
+
+    <select id="getStudyInfoByAccessionNumber" resultType="com.by.ris_springboot.workbench.domain.StudyInfo">
+        select * from tbl_study_info where accessionNumber=#{accessionNumber}
+    </select>
+
+    <select id="getTotalByCondition3" resultType="int"> /*①不能写resultMap*/
+        select count(*)
+        from tbl_study_info a,tbl_patient p
+        <where>
+            /*//accessionNumber
+            //department" : $
+            //patientName" :
+            //emergency" : $.*/
+            (a.status=3 or a.status=5) and a.patientID=p.id
+            /*查询的工作 studyID,patientID,patientName,status*/
+            <if test="accessionNumber!=null and accessionNumber!=''">
+                and a.accessionNumber like '%' #{accessionNumber} '%'
+            </if>
+            <if test="department!=null and department!=''">
+                and a.department like '%' #{department} '%'
+            </if>
+            <if test="patientName!=null and patientName!=''">
+                and p.name like '%' #{patientName} '%'
+            </if>
+            <if test="emergency!=null and emergency!=''">
+                and a.emergency like '%' #{emergency} '%'
+            </if>
+        </where>
+    </select>
+
+    <select id="getCheckListByCondition" resultType="com.by.ris_springboot.workbench.domain.StudyInfo">
+        select
+        a.accessionNumber,
+        p.name as name,/*a.patientID,②p.name as patientID会失败吗？*/
+        a.department,
+        a.emergency,
+        a.patientID,
+        a.status  /*③逗号问题，这里没有逗号*/
+        from tbl_study_info a,tbl_patient p
+        <where>
+            /*//accessionNumber
+            //department" : $
+            //patientName" :
+            //emergency" : $.*/
+            (a.status=3 or a.status=5) and a.patientID=p.id
+            /*查询的工作 studyID,patientID,patientName,status*/
+            <if test="accessionNumber!=null and accessionNumber!=''">
+                and a.accessionNumber like '%' #{accessionNumber} '%'
+            </if>
+            <if test="department!=null and department!=''">
+                and a.department like '%' #{department} '%'
+            </if>
+            <if test="patientName!=null and patientName!=''">
+                and p.name like '%' #{patientName} '%'
+            </if>
+            <if test="emergency!=null and emergency!=''">
+                and a.emergency like '%' #{emergency} '%'
+            </if>
+        </where>
+        order by a.accessionNumber asc
+        limit #{skipCount},#{pageSize}
+    </select>
+
+    <select id="getTotalByCondition6OR4" resultType="int"> /*①不能写resultMap*/
+        select count(*)
+        from tbl_study_info a
+        join tbl_patient p
+        on a.patientID=p.id
+        <where>
+            a.status=6
+            /*查询的工作 studyID,patientID,patientName,status*/
+            <if test="studyID!=null and studyID!=''">
+                and a.accessionNumber like '%' #{studyID} '%'
+            </if>
+            <if test="patientID!=null and patientID!=''">
+                and a.patientID like '%' #{patientID} '%'
+            </if>
+            <if test="patientName!=null and patientName!=''">
+                and p.name like '%' #{patientName} '%'
+            </if>
+            <if test="status!=null and status!=''">
+                and a.status like '%' #{status} '%'
+            </if>
+        </where>
+    </select>
+
+
+    <!--查询所有的「待写报告」状态的检查信息StudyInfo，包括「未写报告」和「需要修改报告」状态的所有检查-->
+    <select id="getReportListByCondition" resultType="com.by.ris_springboot.workbench.domain.StudyInfo">
+        select
+        a.accessionNumber,
+        p.name as name,/*a.patientID,②p.name as patientID会失败吗？*/
+        a.department,
+        a.emergency,
+        a.patientID,
+        a.status, /*③逗号问题，这里没有逗号*/
+        studyInstanceUID
+        from tbl_study_info a,tbl_patient p
+        <where>
+            /*or (r.reportStatus=2 and r.studyID = a.accessionNumber)*/
+            (a.status=6) and a.patientID=p.id /*待写报告状态，*/
+            /*查询的工作 studyID,patientID,patientName,status*/
+            <if test="studyID!=null and studyID!=''">
+                and a.accessionNumber like '%' #{studyID} '%'
+            </if>
+            <if test="patientID!=null and patientID!=''">
+                and a.patientID like '%' #{patientID} '%'
+            </if>
+            <if test="patientName!=null and patientName!=''">
+                and p.name like '%' #{patientName} '%'
+            </if>
+            <if test="status!=null and status!=''">
+                and a.status like '%' #{status} '%'
+            </if>
+        </where>
+        order by a.accessionNumber asc
+
+    </select>
+
+    <update id="updateStudyInfoStatus" parameterType="java.lang.String">
+        update tbl_study_info
+        set status=#{status}
+        where accessionNumber=#{accessionNumber}
+    </update>
+
+
+    <!--//xhy-->
+    <update id="signin">
+        update tbl_study_info set
+            status = #{status}
+        where accessionNumber=#{accessionNumber}
+    </update>
+
+    <update id="cancel">
+        update tbl_study_info set
+                                  status = #{status},
+                                  scheduledProcedureStepStartDate = #{scheduledProcedureStepStartDate},
+                                  scheduledProcedureStepStartTime = #{scheduledProcedureStepStartTime},
+                                  cancellationReason = #{cancellationReason},
+                                  cancellationTime = #{cancellationTime},
+                                  cancellationUser = #{cancellationUser}
+        where accessionNumber=#{accessionNumber}
+    </update>
+
+    <update id="updatescheduledProcedureStepStart">
+        update tbl_study_info set
+                                  status = #{status},
+                                  scheduledProcedureStepStartDate = #{scheduledProcedureStepStartDate},
+                                  scheduledProcedureStepStartTime = #{scheduledProcedureStepStartTime}
+        where accessionNumber=#{accessionNumber}
+    </update>
+
+    <update id="update">
+        update tbl_study_info set
+                                  status = #{status},
+                                  department = #{department},
+                                  emergency = #{emergency},
+                                  clinicianID = #{clinicianID},
+                                  registrarID = #{registrarID},
+                                  bodyParts = #{bodyParts},
+                                  modality = #{modality},
+                                  studyDevice = #{studyDevice},
+                                  studyInstanceUID = #{studyInstanceUID},
+                                  requestedProcedureDescription = #{requestedProcedureDescription}
+        where accessionNumber=#{accessionNumber}
+    </update>
+
+    <delete id="delete">
+        delete from tbl_study_info
+        where accessionNumber in
+        <foreach collection="array" item="accessionNumber" open="(" close=")" separator=",">
+            #{accessionNumber}
+        </foreach>
+    </delete>
+
+    <insert id="save">
+        insert into tbl_study_info(
+            accessionNumber,
+            status,
+            patientID,
+            department,
+            emergency,
+            clinicianID,
+            registrarID,
+            bodyParts,
+            modality,
+            studyDevice,
+            studyInstanceUID,
+            requestedProcedureDescription
+        )
+        values(
+                  #{accessionNumber},
+                  #{status},
+                  #{patientID},
+                  #{department},
+                  #{emergency},
+                  #{clinicianID},
+                  #{registrarID},
+                  #{bodyParts},
+                  #{modality},
+                  #{studyDevice},
+                  #{studyInstanceUID},
+                  #{requestedProcedureDescription}
+              )
+    </insert>
+
+    <select id="getTotalByCondition" resultType="int">
+        select count(*)
+        from tbl_study_info s
+        join tbl_patient p
+        on s.patientID=p.id
+        <where>
+            <!--<if test="status!=null and status!=''">
+                s.status like '%' #{status} '%'
+            </if>-->
+            (s.status=1 or s.status=4)
+            <if test="patientname!=null and patientname!=''">
+                and p.name like '%' #{patientname} '%'
+            </if>
+            <if test="department!=null and department!=''">
+                and s.department like '%' #{department} '%'
+            </if>
+            <if test="scheduledProcedureStepStartDate!=null and scheduledProcedureStepStartDate!=''">
+                and s.scheduledProcedureStepStartDate like '%' #{scheduledProcedureStepStartDate} '%'
+            </if>
+            <if test="scheduledProcedureStepStartTime!=null and scheduledProcedureStepStartTime!=''">
+                and s.scheduledProcedureStepStartTime like '%' #{scheduledProcedureStepStartTime} '%'
+            </if>
+            <if test="clinicianID!=null and clinicianID!=''">
+                and s.clinicianID like '%' #{clinicianID} '%'
+            </if>
+            <if test="registrarID!=null and registrarID!=''">
+                and s.registrarID like '%' #{registrarID} '%'
+            </if>
+            <if test="emergency!=null and emergency!=''">
+                and s.emergency like '%' #{emergency} '%'
+            </if>
+        </where>
+    </select>
+
+    <select id="getStudyInfoDaoListByCondition" resultType="com.by.ris_springboot.workbench.domain.StudyInfo">
+        select
+        s.accessionNumber,
+        s.status,
+        s.patientID,
+        p.name as name,
+        s.department,
+        s.clinicianID,
+        s.scheduledProcedureStepStartDate,
+        s.scheduledProcedureStepStartTime,
+        s.emergency
+        from tbl_study_info s
+        join tbl_patient p
+        on s.patientID=p.id
+        <where>
+            <!--<if test="status!=null and status!=''">
+                s.status like '%' #{status} '%'
+            </if>-->
+            (s.status=1 or s.status=4 or s.status=0)
+            <if test="patientname!=null and patientname!=''">
+                and p.name like '%' #{patientname} '%'
+            </if>
+            <if test="department!=null and department!=''">
+                and s.department like '%' #{department} '%'
+            </if>
+            <if test="scheduledProcedureStepStartDate!=null and scheduledProcedureStepStartDate!=''">
+                and s.scheduledProcedureStepStartDate like '%' #{scheduledProcedureStepStartDate} '%'
+            </if>
+            <if test="scheduledProcedureStepStartTime!=null and scheduledProcedureStepStartTime!=''">
+                and s.scheduledProcedureStepStartTime like '%' #{scheduledProcedureStepStartTime} '%'
+            </if>
+            <if test="clinicianID!=null and clinicianID!=''">
+                and s.clinicianID like '%' #{clinicianID} '%'
+            </if>
+            <if test="registrarID!=null and registrarID!=''">
+                and s.registrarID like '%' #{registrarID} '%'
+            </if>
+            <if test="emergency!=null and emergency!=''">
+                and s.emergency like '%' #{emergency} '%'
+            </if>
+        </where>
+        limit #{skipCount},#{pageSize}
+    </select>
+
+    <select id="getStudyInfoListByCondition" resultType="com.by.ris_springboot.workbench.domain.StudyInfo">
+        select
+        s.accessionNumber,
+        p.name as patientID,
+        s.department,
+        s.clinicianID,
+        s.scheduledProcedureStepStartDate,
+        s.scheduledProcedureStepStartTime,
+        s.emergency
+        from tbl_study_info s
+        join tbl_patient p
+        on s.patientID=p.id
+        <where>
+            <if test="status!=null and status!=''">
+                s.status like '%' #{status} '%'
+            </if>
+            <if test="patientname!=null and patientname!=''">
+                and p.name like '%' #{patientname} '%'
+            </if>
+            <if test="department!=null and department!=''">
+                and s.department like '%' #{department} '%'
+            </if>
+            <if test="scheduledProcedureStepStartDate!=null and scheduledProcedureStepStartDate!=''">
+                and s.scheduledProcedureStepStartDate like '%' #{scheduledProcedureStepStartDate} '%'
+            </if>
+            <if test="scheduledProcedureStepStartTime!=null and scheduledProcedureStepStartTime!=''">
+                and s.scheduledProcedureStepStartTime like '%' #{scheduledProcedureStepStartTime} '%'
+            </if>
+            <if test="clinicianID!=null and clinicianID!=''">
+                and s.clinicianID like '%' #{clinicianID} '%'
+            </if>
+            <if test="registrarID!=null and registrarID!=''">
+                and s.registrarID like '%' #{registrarID} '%'
+            </if>
+            <if test="emergency!=null and emergency!=''">
+                and s.emergency like '%' #{emergency} '%'
+            </if>
+        </where>
+        limit #{skipCount},#{pageSize}
+    </select>
+
+</mapper>

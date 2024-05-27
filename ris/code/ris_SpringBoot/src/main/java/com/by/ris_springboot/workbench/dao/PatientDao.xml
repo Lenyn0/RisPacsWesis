@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.by.ris_springboot.workbench.dao.PatientDao">
+
+    <select id="getPatientByaccessionNumber" resultType="com.by.ris_springboot.workbench.domain.Patient">
+        select *
+        from tbl_patient p
+        join tbl_study_info s
+        on p.id=s.patientID
+        where s.accessionNumber=#{accessionNumber}
+    </select>
+
+    <update id="update">
+        update tbl_patient set
+                               namePinYin = #{namePinYin},
+                               age = #{age},
+                               ageType = #{ageType},
+                               gender = #{gender},
+                               birthDate = #{birthDate},
+                               address = #{address},
+                               pregnancy = #{pregnancy},
+                               inpatientDepartment = #{inpatientDepartment},
+                               inpatientBedNumber = #{inpatientBedNumber},
+                               inpatientNumber = #{inpatientNumber},
+                               phoneNumber = #{phoneNumber},
+                               patientType = #{patientType},
+                               idType = #{idType},
+                               idNumber = #{idNumber},
+                               healthCareType = #{healthCareType}
+        where id=#{id}
+    </update>
+
+    <select id="getPatientByName" resultType="com.by.ris_springboot.workbench.domain.Patient">
+        select * from tbl_patient where name=#{name}
+    </select>
+
+    <select id="getPatientNameList" resultType="String">
+        select name from tbl_patient where name like '%' #{name} '%'
+    </select>
+
+    <delete id="deleteByAids">
+        delete
+        from tbl_patient p
+        where id in(
+            select
+            p.id
+            from tbl_patient p
+            join tbl_study_info s
+            where s.accessionNumber in
+            <foreach collection="array" item="accessionNumber" open="(" close=")" separator=",">
+                #{accessionNumber}
+            </foreach>
+        )
+    </delete>
+
+    <select id="getCountByAids" resultType="int">
+        select count(*)
+        from tbl_patient p
+        join tbl_study_info s
+        on p.id=s.patientID
+        where s.accessionNumber in
+        <foreach collection="array" item="accessionNumber" open="(" close=")" separator=",">
+            #{accessionNumber}
+        </foreach>
+    </select>
+
+    <insert id="save">
+        insert into tbl_patient(
+            id,
+            name,
+            namePinYin,
+            age,
+            ageType,
+            gender,
+            birthDate,
+            address,
+            pregnancy,
+            inpatientDepartment,
+            inpatientBedNumber,
+            inpatientNumber,
+            phoneNumber,
+            patientType,
+            idType,
+            idNumber,
+            healthCareType
+        )
+        values(
+                #{id},
+                #{name},
+                #{namePinYin},
+                #{age},
+                #{ageType},
+                #{gender},
+                #{birthDate},
+                #{address},
+                #{pregnancy},
+                #{inpatientDepartment},
+                #{inpatientBedNumber},
+                #{inpatientNumber},
+                #{phoneNumber},
+                #{patientType},
+                #{idType},
+                #{idNumber},
+                #{healthCareType}
+              )
+    </insert>
+
+
+
+    <!--根据检查号获取病人信息-->
+    <select id="getPatientByAccessionNumber" resultType="com.by.ris_springboot.workbench.domain.Patient">
+        select id,name,age,gender
+        from tbl_patient p, tbl_study_info s
+        where s.accessionNumber=#{accessionNumber} and s.patientID=p.id
+    </select>
+
+    <!--根据病人号获取病人信息-->
+    <select id="getPatientByID" resultType="com.by.ris_springboot.workbench.domain.Patient">
+        select id,name,age,gender
+        from tbl_patient
+        where id=#{id}
+    </select>
+
+</mapper>

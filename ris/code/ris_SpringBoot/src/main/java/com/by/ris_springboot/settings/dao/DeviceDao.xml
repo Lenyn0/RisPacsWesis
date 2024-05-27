@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.by.ris_springboot.settings.dao.DeviceDao">
+
+    <select id="getAll" resultType="com.by.ris_springboot.settings.domain.Device">
+
+        select id,name,room from tbl_device
+
+    </select>
+
+    <select id="getTotalByCondition" resultType="int">
+        select count(*)
+        from tbl_device
+        <where>
+            <if test="name!=null and name!=''">
+                name like '%' #{name} '%'
+            </if>
+            <if test="aet!=null and aet!=''">
+                and aet like '%' #{aet} '%'
+            </if>
+            <if test="room!=null and room!=''">
+                and room like '%' #{room} '%'
+            </if>
+        </where>
+    </select>
+
+    <select id="getDeviceListByCondition" resultType="com.by.ris_springboot.settings.domain.Device">
+        select *
+        from tbl_device
+        <where>
+            <if test="name!=null and name!=''">
+                name like '%' #{name} '%'
+            </if>
+            <if test="aet!=null and aet!=''">
+                and aet like '%' #{aet} '%'
+            </if>
+            <if test="room!=null and room!=''">
+                and room like '%' #{room} '%'
+            </if>
+        </where>
+        limit #{skipCount},#{pageSize}
+    </select>
+
+    <insert id="save">
+        insert into tbl_device(
+            id,
+            name,
+            aet,
+            port,
+            ip,
+            room
+        )
+        values(
+            #{id},
+            #{name},
+            #{aet},
+            #{port},
+            #{ip},
+            #{room}
+              )
+    </insert>
+
+    <delete id="delete">
+        delete from tbl_device
+        where id in
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="detail" resultType="com.by.ris_springboot.settings.domain.Device">
+        select *
+        from tbl_device
+        where id=#{id}
+    </select>
+
+    <update id="update">
+        update tbl_device set
+                            name = #{name},
+                            aet = #{aet},
+                            port = #{port},
+                            ip = #{ip},
+                            room = #{room}
+        where id=#{id}
+    </update>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
