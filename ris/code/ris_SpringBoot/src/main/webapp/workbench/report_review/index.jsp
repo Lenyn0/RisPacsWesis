@@ -52,7 +52,9 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
                 },
                 type: "get",
                 dataType: "json",
-                success: function (data) {
+                success: function (result) {
+                    var data = result.data;
+
                     $.each(data.dataList, function (i, wtt) {
 
                             //alert("显示status为6的数据");
@@ -153,7 +155,7 @@ String basePath = request.getScheme() + "://" + request.getServerName() + ":" + 
                 }else{
                     //把检查号传进去
                     var id = $xz.val();//报告号
-                    window.location.href = "workbench/report_review/report_print.do?id="+id;
+                    window.location.href = "workbench/Report/report_print.do?id="+id;
                     //应该是只有审核通过的才可以打印吧？
 
                 }

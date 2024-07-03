@@ -29,9 +29,6 @@ import java.util.logging.Logger;
 import static com.bjpowernode.crm.web.dcmqrscp.DcmQRSCP.worlistService;
 import static com.bjpowernode.crm.web.hl7rcv.HL7Rcv.hl7Service;
 
-/**
- * Author 北京动力节点
- */
 public class SysInitListener implements ServletContextListener {
     /*
         该方法是用来监听上下文域对象的方法，当服务器启动，上下文域对象创建

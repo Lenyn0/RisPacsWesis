@@ -20,9 +20,12 @@
 
     <script type="text/javascript">
 
+        var startTime;
+        var intervalId;
+
         $(function(){
 
-               $("#create-diseaseName").mousemove(function (){
+            $("#create-diseaseName").mousemove(function (){
                     var body = $("#bodyParts").text();
                     //通过走后台的方式获得一个标签的值
                     $.ajax({
@@ -33,10 +36,11 @@
                         type : "get",
                         dataType : "json",
                         async: true,
-                        success : function (data) {
+                        success : function (result) {
+                            var data=result.data;
                             var html = "<option></option>";
                             $.each(data,function(i,n){
-                                // html += "<option value='"+n.name+"'>"+n.name+"</option>";
+                                html += "<option value='"+n.name+"'>"+n.name+"</option>";
                             })
                             $("#create-diseaseName").html(html);
                         }
@@ -113,6 +117,7 @@
                         "diseaseName" :$("#create-diseaseName").val(),
                         "diseaseDescription" : $("#create-diseaseDescription").val(),
                         "positive" : $("#create-positive").val(),
+                        "elapsedTime" : $("#elapsedTimeDisplay").text(),
                         //用来判断是审核医生填写报告还是报告医生填写报告
                         "flag0" : flag
                     },
@@ -141,15 +146,15 @@
 
         });
         $(document).ready(function(){
-
             //获得一个随机ID
             $.ajax({
                 url : "workbench/Report/get_data.do",
                 data : {  },
                 type : "get",
-                dataType : "text",
+                dataType : "json",
                 async: true,
-                success : function (data) {
+                success : function (result) {
+                    var data = result.data;
                     $("#create-id").html(data);
                 }
 
@@ -161,6 +166,7 @@
             const studyID = db.getItem("studyID");
             const patientID = db.getItem("patientID");
             const name = db.getItem("name");
+            const studyInstanceUID = db.getItem("studyInstanceUID");
 
             //获取传过来的值
             //从index.jsp界面获取检查号和病人号和病人名
@@ -171,6 +177,7 @@
             db.removeItem('studyID');
             db.removeItem('patientID');
             db.removeItem('name');
+            db.removeItem('studyInstanceUID');
 
             //获得病人的年龄，性别
             $.ajax({
@@ -183,7 +190,8 @@
                 type : "get",
                 dataType : "json",
                 async: true,
-                success : function (data) {
+                success : function (result) {
+                    var data = result.data;
                     /*alert(data);*/
                     $("#age").html(data.age);
                     $("#gender").html(data.gender);
@@ -201,7 +209,8 @@
                 type : "get",
                 dataType : "json",
                 async: true,
-                success : function (data) {
+                success : function (result) {
+                    var data=result.data;
                     /*alert(data);*/
                     $("#bodyParts").html(data.bodyParts);
                     $("#projection").html(data.projection);
@@ -210,6 +219,35 @@
                 }
 
             })
+
+
+            $('#viewImageBtn').click(function() {
+                //获取properties配置文件中的属性值
+                <%@ page language="java" import="java.util.*"%>
+                <%--            <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>--%>
+                <%--            <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>--%>
+                <%
+                    // properties 配置文件名称
+                    ResourceBundle res = ResourceBundle.getBundle("ris");
+                %>
+                var dcm4cheeIP = "<%=res.getString("dcm4cheeIP")%>";
+                window.open("http://"+dcm4cheeIP+":8080/weasis-pacs-connector/weasis?&cdb&studyUID=" +studyInstanceUID, "_parent");
+            });
+        });
+
+        $(document).ready(function() {
+            // 记录开始时间
+            startTime = new Date();
+
+            // 创建定时器，每秒更新一次经过的时间
+            intervalId = setInterval(function() {
+                var now = new Date();
+                var elapsedSeconds = Math.floor((now - startTime) / 1000);
+                // 更新页面上的时间显示
+                $('#elapsedTimeDisplay').text("Elapsed time: " + elapsedSeconds + " seconds");
+                //console.log("Elapsed time: " + elapsedSeconds + " seconds");
+            }, 1000);
+
         });
 
     </script>
@@ -225,7 +263,9 @@
 检查信息表——计划的程序步骤的相关描述，投照方式，使用耗材--%>
 <div style="position:  relative; left: 10%;">
     <h3>填写报告</h3>
+    <div id="elapsedTimeDisplay"></div>
     <div style="position: relative; top: -40px; left: 70%;">
+        <button type="button" class="btn btn-primary" id="viewImageBtn">查看图像</button>
         <button type="button" class="btn btn-primary" id="saveBtn">提交</button>
         <button type="button" class="btn btn-default" onclick="window.location.href = 'workbench/write_report/index.jsp';">取消</button>
     </div>

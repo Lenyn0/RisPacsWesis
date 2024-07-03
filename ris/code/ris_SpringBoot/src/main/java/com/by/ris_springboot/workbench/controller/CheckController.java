@@ -124,8 +124,5 @@ public class CheckController extends HttpServlet {
         //window.location.href = "workbench/check/detail.jsp";
         request.getRequestDispatcher("/workbench/check/detail.jsp").forward(request, response);
     }
-
-
-
 }
 

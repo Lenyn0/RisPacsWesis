@@ -222,7 +222,7 @@
         }
 
         $(document).ready(function () {
-            pageList(1, 2);
+            pageList(1, 8);
         });
         //为全选的复选框绑定事件，触发全选操作
 

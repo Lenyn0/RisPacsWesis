@@ -199,4 +199,4 @@ def getReportGeneration(image):
         medical_report = {
             '报告生成结果':candidate
         }
-        return json.dumps(medical_report)
+        return json.dumps(medical_report,ensure_ascii=False)

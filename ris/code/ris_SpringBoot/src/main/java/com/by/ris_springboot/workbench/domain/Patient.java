@@ -21,6 +21,4 @@ public class Patient {
     private String idType;
     private String idNumber;
     private String healthCareType;
-
-
 }

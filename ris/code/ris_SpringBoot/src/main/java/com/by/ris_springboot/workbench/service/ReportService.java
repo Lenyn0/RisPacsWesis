@@ -13,6 +13,12 @@ import java.util.Map;
 
 public interface ReportService {
 
+    int save(Report r);
+    int update(Report r);
+    PaginationVO<Report> pageList_Report(Map<String, Object> map);
+    int updateAuditorID(String id, String auditorID);
+
+    int updateReportStatus(String id, String reportStatus);
 
     PaginationVO<StudyInfo> pageList_StudyInfo(Map<String, Object> map);
 
@@ -26,8 +32,11 @@ public interface ReportService {
 
     Boolean updateStudyInfoByArtificer(StudyInfo st);
 
+
     boolean updateStudyInfoStatus(@Param("accessionNumber") String accessionNumber, @Param("status") String status);
 
     boolean updatetechnicianID(@Param("accessionNumber")String accessionNumber,@Param("technicianID")String technicianID);
+
+    String getReportStatusById(String id);
 
 }

@@ -107,18 +107,19 @@
             db.setItem("studyID", str[0]);
             db.setItem("patientID", str[1]);
             db.setItem("name", str[2]);
+            db.setItem("studyInstanceUID", str[4]);
             //获取properties配置文件中的属性值
-            <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
-<%--            <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>--%>
-<%--            <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>--%>
-            <%
-                // properties 配置文件名称
-                ResourceBundle res = ResourceBundle.getBundle("ris");
-            %>
-            var dcm4cheeIP = "<%=res.getString("dcm4cheeIP")%>";
-            // alert('str[4]');
-            // alert(str[4]);
-            window.open("http://"+dcm4cheeIP+":8080/weasis-pacs-connector/weasis?&cdb&studyUID=" + str[4], "_parent");
+<%--            <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>--%>
+<%--            &lt;%&ndash;            <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>&ndash;%&gt;--%>
+<%--            &lt;%&ndash;            <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>&ndash;%&gt;--%>
+<%--            <%--%>
+<%--                // properties 配置文件名称--%>
+<%--                ResourceBundle res = ResourceBundle.getBundle("ris");--%>
+<%--            %>--%>
+<%--            var dcm4cheeIP = "<%=res.getString("dcm4cheeIP")%>";--%>
+<%--            // alert('str[4]');--%>
+<%--            // alert(str[4]);--%>
+<%--            window.open("http://"+dcm4cheeIP+":8080/weasis-pacs-connector/weasis?&cdb&studyUID=" + str[4], "_parent");--%>
             //跳转
             if (str[3] == "等待填写") {
                 window.location.href = "workbench/write_report/report_edit.jsp";

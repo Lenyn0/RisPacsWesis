@@ -120,11 +120,14 @@ public class RegisterController {
         //studyinfo表
         String accessionNumber = UUIDUtil.getUUID();
         String studyInstanceUID = UIDUtils.createUID();
+
         studyInfo.setStudyInstanceUID(studyInstanceUID);
         studyInfo.setAccessionNumber(accessionNumber);
+        studyInfo.setStatus("1");
 
         System.out.println(patient);
         System.out.println(studyInfo);
+
         boolean flag = registerService.save(patient,studyInfo);
         if(flag){
             //创建成功

@@ -69,15 +69,15 @@
             $("#saveBtn").click(function(){
 
                 //发出传统请求，提交表单
-                if($("#create-diseaseName").val()==""||$("#create-diseaseName").val()==null){
+                if($("#create-diseaseName").html()==""||$("#create-diseaseName").html()==null){
                     alert("请填写疾病名称");
                     return false;
                 }
-                if($("#create-bodyPart").val()==""||$("#create-bodyPart").val()==null){
+                if($("#create-bodyPart").html()==""||$("#create-bodyPart").html()==null){
                     alert("请填写疾病部位");
                     return false;
                 }
-                if($("#create-positive").val()==""||$("#create-positive").val()==null){
+                if($("#create-positive").html()==""||$("#create-positive").html()==null){
                     alert("请填写是否阳性");
                     return false;
                 }

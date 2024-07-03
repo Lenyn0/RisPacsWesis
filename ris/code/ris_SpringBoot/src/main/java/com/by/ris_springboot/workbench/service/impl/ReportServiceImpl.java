@@ -28,7 +28,48 @@ public class ReportServiceImpl implements ReportService {
     @Autowired
     private PatientDao patientDao;
 
+    public int save(Report r) {
+        int result = reportDao.save(r);
+        System.out.println("save:"+result);
+        return result;
+    }
+    public int update(Report r) {
+        int result = reportDao.update(r);
+        System.out.println("update result:"+result);
+        return result;
+    }
 
+    public PaginationVO<Report> pageList_Report(Map<String, Object> map) {
+        //取得total,可能会有条件
+        int total = reportDao.getTotalByCondition(map);
+        System.out.println("total:"+total);
+
+        //取得dataList，可能会有条件
+        List<Report> dataList = reportDao.getReportListByCondition(map);
+        //dataList.set("等待填写",);
+        System.out.println("dataList结果:");
+        for(int i=0;i< dataList.size();i++)
+            System.out.println(dataList.get(i));
+        //创建一个vo对象，将total和dataList封装到vo中
+        PaginationVO<Report> vo = new PaginationVO<Report>();
+        vo.setTotal(total);
+        vo.setDataList(dataList);
+        System.out.println("vo值：");
+        System.out.println(vo.toString());
+        //将vo返回
+        return vo;
+    }
+
+    public int updateReportStatus(String id, String reportStatus) {
+        int result = reportDao.updateReportStatus(id, reportStatus);
+        System.out.println("updateReportStatus result:"+result);
+        return result;
+    }
+
+    public int updateAuditorID(String id, String auditorID) {
+        int result = reportDao.updateAuditorID(id, auditorID);
+        return result;
+    }
 
     public PaginationVO<StudyInfo> pageList_StudyInfo(Map<String, Object> map) {
 
@@ -154,5 +195,11 @@ public class ReportServiceImpl implements ReportService {
         boolean result = studyInfoDao.updatetechnicianID(accessionNumber,technicianID);
         System.out.println("result:"+result);
         return result;
+    }
+
+    public String getReportStatusById(String id){
+        String reportStatus = reportDao.getReportStatusById(id);
+        System.out.println("reportStatus:"+reportStatus);
+        return reportStatus;
     }
 }

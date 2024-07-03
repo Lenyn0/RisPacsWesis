@@ -28,7 +28,7 @@ def generate_search_result():
     search_result = {}
 
     for i in range(1, 20):  # 从1到19
-        filename = f"{i}.png"  # 图片文件名
+        filename = f"demo_image/{i}.png"  # 图片文件名
         if os.path.exists(filename):  # 检查文件是否存在
             try:
                 with open(filename, "rb") as image_file:
@@ -95,7 +95,7 @@ def receive_images_continuously():
         if flag == 'reportGeneration':
             medical_report_json = getReportGeneration(image)
             client_socket.sendall(medical_report_json.encode('utf-8'))
-            send_data_to_RIS(medical_report_json)
+            send_data_to_RIS(medical_report_json.encode('utf-8'))
         elif flag == 'anomalyDetection':
             detection_result_json = GetAnomalyDetection(image)
             client_socket.sendall(detection_result_json.encode('utf-8'))

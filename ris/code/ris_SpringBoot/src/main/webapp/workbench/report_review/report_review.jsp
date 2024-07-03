@@ -50,12 +50,14 @@
                     },
                     type : "get",
                     dataType : "json",
-                    success : function (data) {
+                    success : function (result) {
+                        var data = result.data;
                         //alert(data.createUserID);
                         /*
                             data
                                 将报告信息遍历出来
                          */
+                        $('#elapsedTimeDisplay').text(data.elapsedTime);
                         var html = "";
                         html += '<div class="form-group">';
                         html += '<label for="id" class="col-sm-2 control-label">报告号</label>';
@@ -224,6 +226,7 @@
 
 <div style="position:  relative; left: 10%;">
     <h3>报告详情</h3>
+    <div id="elapsedTimeDisplay"></div>
     <div style="position: relative; top: -40px; left: 51.5%;">
         <button type="button" class="btn btn-primary" id="pass">审核通过</button>
         <button type="button" class="btn btn-danger" id="reject">审核驳回</button>

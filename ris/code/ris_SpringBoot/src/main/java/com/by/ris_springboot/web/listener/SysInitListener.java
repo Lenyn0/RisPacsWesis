@@ -5,6 +5,7 @@ import com.by.ris_springboot.settings.domain.DicValue;
 import com.by.ris_springboot.settings.domain.DiseaseDictionary;
 import com.by.ris_springboot.settings.service.DeviceService;
 import com.by.ris_springboot.settings.service.DicService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -44,7 +45,14 @@ public class SysInitListener implements ApplicationListener<ContextRefreshedEven
                 //将map解析为上下文域对象中保存的键值对
                 Set<String> set = map.keySet();
                 for (String key : set) {
-                    servletContext.setAttribute(key, map.get(key));
+                    if (key.equals("reportTemplateList")){
+                        ObjectMapper objectMapper = new ObjectMapper();
+                        String jsonReportTemplateList = objectMapper.writeValueAsString(map.get(key));
+                        servletContext.setAttribute(key,jsonReportTemplateList);
+                    }else {
+                        servletContext.setAttribute(key, map.get(key));
+                    }
+
                 }
 
                 Map<String, List<DiseaseDictionary>> dmap = dicService.getDiseaseAll();

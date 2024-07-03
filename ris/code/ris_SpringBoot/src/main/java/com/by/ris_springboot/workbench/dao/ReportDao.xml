@@ -52,8 +52,8 @@
     <!--增加一条新的报告，从无到有-->
     <insert id="save" parameterType="com.by.ris_springboot.workbench.domain.Report">
         insert
-        into tbl_report(id,studyID,patientID,reportStatus,createUserID,auditorID,imagingFindings,diagnosticOpinion,bodyPart,diseaseName,diseaseDescription,createTime,positive)
-        values(#{id},#{studyID},#{patientID},#{reportStatus},#{createUserID},#{auditorID},#{imagingFindings},#{diagnosticOpinion},#{bodyPart},#{diseaseName},#{diseaseDescription},#{createTime},#{positive})
+        into tbl_report(id,studyID,patientID,reportStatus,createUserID,auditorID,imagingFindings,diagnosticOpinion,bodyPart,diseaseName,diseaseDescription,createTime,positive,elapsedTime)
+        values(#{id},#{studyID},#{patientID},#{reportStatus},#{createUserID},#{auditorID},#{imagingFindings},#{diagnosticOpinion},#{bodyPart},#{diseaseName},#{diseaseDescription},#{createTime},#{positive},#{elapsedTime})
     </insert>
 
     <!--修改状态-->
@@ -132,7 +132,7 @@
     <!--根据表设计中诊断医生需要填写的项目进行更新,应该用不到-->
     <update id="update">
         update tbl_report
-        set reportStatus=#{reportStatus},imagingFindings=#{imagingFindings},bodyPart=#{bodyPart} ,diagnosticOpinion=#{diagnosticOpinion},diseaseName=#{diseaseName},diseaseDescription=#{diseaseDescription}
+        set reportStatus=#{reportStatus},imagingFindings=#{imagingFindings},bodyPart=#{bodyPart} ,diagnosticOpinion=#{diagnosticOpinion},diseaseName=#{diseaseName},diseaseDescription=#{diseaseDescription},elapsedTime=#{elapsedTime}
         where id=#{id}
     </update>
 

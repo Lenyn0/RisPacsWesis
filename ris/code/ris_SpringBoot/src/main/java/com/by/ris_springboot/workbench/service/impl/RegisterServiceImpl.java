@@ -67,6 +67,20 @@ public class RegisterServiceImpl implements RegisterService {
             }
         }
         return flag;
+/*        boolean flagPatient = true;
+        boolean flagStudyinfo = true;
+        if(patientDao.save(p)!=1){
+            flagPatient=false;
+        }
+        if( studyinfoDao.save(s)!=1){
+            flagStudyinfo=false;
+        }
+        if (flagPatient&&flagStudyinfo){
+            return true;
+        }
+        else{
+            return false;
+        }*/
     }
 
     public boolean delete(String[] accessionNumbers) {

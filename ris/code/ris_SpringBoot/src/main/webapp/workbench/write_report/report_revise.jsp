@@ -18,9 +18,43 @@
     <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/js/bootstrap-datetimepicker.min.js"></script>
     <script type="text/javascript" src="jquery/bootstrap-datetimepicker-master/locale/bootstrap-datetimepicker.zh-CN.js"></script>
 
+    <script type="text/javascript" src="jquery/bs_typeahead/bootstrap3-typeahead.min.js"></script>
     <script type="text/javascript">
 
+        var startTime;
+        var intervalId;
+
         $(function(){
+
+
+            /*<![CDATA[*/
+            // 从服务器端传递的 JSON 数据
+            var reportTemplateList = ${reportTemplateList};
+
+
+            // 提取模板名称列表
+            var templateNames = reportTemplateList.map(function(item) {
+                return item.value;
+            });
+
+            // 创建一个模板映射
+            var templateMap = {};
+            reportTemplateList.forEach(function(item) {
+                templateMap[item.value] = item.text;
+            });
+
+            // console.log("Template Names: ", templateNames);
+            // console.log("Template Map: ", templateMap);
+
+            $("#create-imagingFindings").typeahead({
+                source: templateNames,
+                afterSelect: function (data) {
+                    // 选择项之后的事件，data 是当前选中的。
+                    var templateContent = templateMap[data];
+                    $("#create-imagingFindings").val(templateContent);
+                },
+                delay: 1500
+            });
 
             /*$("#create-diseaseName").mousemove(function (){
                 var body = $("#create-bodyPart").text();
@@ -67,7 +101,6 @@
 
             //为保存按钮添加事件，执行添加操作
             $("#saveBtn").click(function(){
-
                 //发出传统请求，提交表单
                 if($("#create-diseaseName").html()==""||$("#create-diseaseName").html()==null){
                     alert("请填写疾病名称");
@@ -101,7 +134,7 @@
                         "id" : $("#create-id").text(),
                         "studyID" :$("#create-studyID").text(),
                         "patientID" :$("#create-patientID").text(),
-                        "createUserID" :$("#create-createUserID").val(),
+                        "createUserID" :$("#create-createUserID").text(),
                         "auditorID" :$("#create-auditorID").val(),
                         "imagingFindings" : $("#create-imagingFindings").val(),
                         "diagnosticOpinion" : $("#create-diagnosticOpinion").val(),
@@ -109,6 +142,7 @@
                         "diseaseName" :$("#create-diseaseName").val(),
                         "diseaseDescription" : $("#create-diseaseDescription").val(),
                         "positive" : $("#create-positive").val(),
+                        "elapsedTime" : $("#elapsedTimeDisplay").text(),
                         "flag" : true//用来判断是修改还是删除
                     },
                     type : "post",
@@ -142,13 +176,27 @@
             const studyID = db.getItem("studyID");
             const patientID = db.getItem("patientID");
             const name = db.getItem("name");
+            const studyInstanceUID = db.getItem("studyInstanceUID");
 
             //获取传过来的值
             //从index.jsp界面获取检查号和病人号和病人名
             $("#create-studyID").html(studyID);
             $("#create-patientID").html(patientID);
             $("#name").html(name);
-            //清除缓存
+
+
+            $('#viewImageBtn').click(function() {
+                //获取properties配置文件中的属性值
+                <%@ page language="java" import="java.util.*"%>
+                <%--            <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>--%>
+                <%--            <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>--%>
+                <%
+                    // properties 配置文件名称
+                    ResourceBundle res = ResourceBundle.getBundle("ris");
+                %>
+                var dcm4cheeIP = "<%=res.getString("dcm4cheeIP")%>";
+                window.open("http://"+dcm4cheeIP+":8080/weasis-pacs-connector/weasis?&cdb&studyUID=" +studyInstanceUID, "_parent");
+            });
 
 
             //从数据库获得相关数据的值
@@ -239,6 +287,7 @@
             db.removeItem('studyID');
             db.removeItem('patientID');
             db.removeItem('name');
+            db.removeItem('studyInstanceUID');
         });
 
         $(document).ready(function() {
@@ -247,15 +296,32 @@
                 $.ajax({
                     url: "workbench/Report/sent_python_message.do",
                     type: "get",
-                    dataType: "text",
-                    success: function(data) {
-                        if (data.trim() !== '') { // 检查收到的数据是否不为空
+                    dataType: "json",
+                    success: function(result) {
+                        var data = result.data;
+                        if (data!=null&&data.trim()!= '') { // 检查收到的数据是否不为空
                             $("#create-imagingFindings").html(data); // 更新页面上的消息内容
                         }
                     }
                 });
             }, 5000); // 每5秒执行一次
         });
+
+        $(document).ready(function() {
+            // 记录开始时间
+            startTime = new Date();
+
+            // 创建定时器，每秒更新一次经过的时间
+            intervalId = setInterval(function() {
+                var now = new Date();
+                var elapsedSeconds = Math.floor((now - startTime) / 1000);
+                // 更新页面上的时间显示
+                $('#elapsedTimeDisplay').text("Elapsed time: " + elapsedSeconds + " seconds");
+                //console.log("Elapsed time: " + elapsedSeconds + " seconds");
+            }, 1000);
+
+        });
+
 
     </script>
 
@@ -267,7 +333,9 @@
 
 <div style="position:  relative; left: 10%;">
     <h3>填写报告</h3>
+    <div id="elapsedTimeDisplay"></div>
     <div style="position: relative; top: -40px; left: 70%;">
+        <button type="button" class="btn btn-primary" id="viewImageBtn">查看图像</button>
         <button type="button" class="btn btn-primary" id="saveBtn">提交</button>
         <button type="button" class="btn btn-default" onclick="window.location.href = 'workbench/write_report/index.jsp';">取消</button>
     </div>

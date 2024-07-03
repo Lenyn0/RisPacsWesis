@@ -4,6 +4,7 @@ package com.by.ris_springboot.settings.service;
 import com.by.ris_springboot.settings.domain.DicValue;
 import com.by.ris_springboot.settings.domain.DiseaseDictionary;
 import com.by.ris_springboot.vo.PaginationVO;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.util.List;
 import java.util.Map;
